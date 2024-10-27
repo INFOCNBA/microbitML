@@ -16,3 +16,10 @@ In the case of this proof of concept, a Perceptron is formed by a team of three 
 
 
 ![](README.d/mbperceptron.png)
+
+## Credits
+
+- heavily based on Prof Fujio Yamamoto's blog article on building a Microbit network emulating a [MLP](https://sparse-dense.blogspot.com/2018/06/microbittwo-layer-perceptronxor.html). Thanks a bunch, Mr Yamamoto!!
+- (C) 2024 - [Leandro Batlle](https://www.linkedin.com/in/lean-b/) - Área de Innovación Educativa Científico-Tecnológica - [CNBA](https://www.cnba.uba.ar)
+
+
