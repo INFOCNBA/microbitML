@@ -1,10 +1,14 @@
 # Imports go at the top
 from microbit import *
 import radio
-versionToken="pct2410"
-messageBusMax=9 #min is 0, if greater that 9, will scroll y screen, try to avoid it
-roleDesc={"A":"perceptron input, weight:1",
-     "B":"perceptron input, weight:2",
+import music
+versionToken="pct"
+messageBusMax=2 #min is 0
+roleWeight={"A":1,"B":2}
+roleCounterMax={"A":3,"B":6}
+
+roleDesc={"A":"perceptron input, weight:{}".format(roleWeight["A"]),
+     "B":"perceptron input, weight:{}".format(roleWeight["B"]),
      "Z":"perceptron output, activation function: a+b>4",}
 
 roleList=list(roleDesc.keys())
@@ -33,7 +37,95 @@ def errorHandler(halt=False,errorCode=0,desc="desc"):
         if not halt:
             break
 
+
+class modelCls():
+    """
+    perceptron. two inputs, possibly n-fold input some day
     
+    """
+    def __init__(self,role,pktIn,pktOut):
+        if role in roleList:
+            self.role=role
+            self.counter={"A":0,"B":0}
+            self.out=0
+            self.pktIn=pktIn
+            self.pktOut=pktOut
+            self.outThreshold=7
+        else:
+            errorHandler(halt=True, errorCode=1, desc="FATAL:unexisting role {}".format(role))
+            
+    def eventHandler(self,event,paramDict):
+        if event=="message":
+            #todo: validation
+            self.message(paramDict)
+        elif event=="button":
+            #todo: validation
+            self.button(paramDict)
+            pass
+        else:
+            errorHandler(halt=True, errorCode=1, desc="FATAL:unexisting event {}".format(event))        
+
+            
+    def updateOutput(self):
+        prevOut=self.out
+        counters_sum=self.counter["A"]+self.counter["B"]
+        if counters_sum >=self.outThreshold:
+            self.out=1
+            if  self.out!=prevOut:
+                music.pitch(frequency=500,duration=250,wait=False)
+        else:
+            self.out=0
+            if  self.out!=prevOut:            
+                music.pitch(frequency=7000,duration=500,wait=False)
+        display.show(counters_sum)
+        for _ in range(5):
+            display.set_pixel(4,_,9*self.out)
+
+            
+
+    
+    def message(self,paramDict):
+        if self.role=="Z":
+            if paramDict["origin"] in self.counter.keys():
+                try:
+                    self.counter[paramDict["origin"]]=int(paramDict["payload"])
+                    self.updateOutput()
+                except Exception as e:
+                    print("DEBUG:{}:model.message():{}".format(self.role,e))        
+            else:
+                print("WARN:{}:model.message():paramDict[origin] '{}' not in self.counter.keys".format(self.role,paramDict["origin"]))
+        
+        else:
+            print("DEBUG:{}:model.message():unimplemented message handler".format(self.role,))
+            pass
+
+    def button(self,paramDict):
+        if self.role in ("A","B"):
+            increment=1
+            increment*=roleWeight[self.role] #apply perceptron input's weight parameter
+            if paramDict["button"]=="a":
+                if self.counter[self.role]+increment > roleCounterMax[self.role]:
+                    increment=0
+                else:
+                    self.counter[self.role]+=increment
+            elif paramDict["button"]=="b":
+                if self.counter[self.role]-increment < 0:
+                    increment=0
+                else:
+                    self.counter[self.role]-=increment          
+            else:
+                print("WARN:{}:model.button():paramDict[button] '{}' not implmented".format(self.role,paramDict["button"]))                
+                increment=0 #just to strigger the beep
+            if increment==0:                
+                #music.pitch(frequency=500,duration=150,wait=False) # no beep, pls!!
+                pass
+            #if increment!=0 #send even if nathing changed, just to recover lost sync with Z
+            display.show(self.counter[self.role])
+            encoded=pktOut.encode(self.counter[self.role])
+            radio.send(encoded)     
+        else:
+            print("DEBUG:{}:model.button():paramDict[button] '{}' not implmented".format(self.role,paramDict["button"]))                
+
 
 def messageSend(roleDest,message):
     print("DEBUG:{}:messageAttend({},{})".format(currentRole,roleDest,message))
@@ -44,7 +136,6 @@ def messageAttend(message):
     print("DEBUG:{}:messageAttend({})".format(currentRole,message))
     
 class pkt():
-    
     def encode(self,payload):
         result=versionToken+","
         result+="{},".format(messageBus)
@@ -90,7 +181,8 @@ def recibido_fila_columna_off():
 def recibido_fila_columna_on():
     display.set_pixel(4,0,9)
 
-def button_a_was_pressed(configAdj):
+def button_a_was_pressed(configAdj):#,model):
+    global model
     if configAdj:
         # config change: role in roleList
         global currentRole
@@ -100,16 +192,19 @@ def button_a_was_pressed(configAdj):
             currentRole=roleList[roleIndex+1]
         else:
             currentRole=roleList[0]
+        
+        model=modelCls(currentRole,model.pktIn,model.pktOut)
         pin_logo_is_touched()
-        print("INFO:button_a_was_pressed({}),newRole:{},prevRole,{}".format(configAdj,currentRole,prevRole))
+        print("INFO:button_a_was_pressed({}),newRole:{},prevRole,{}".format(configAdj,model.role,prevRole))
     else:
-        display.show("a")
-        encoded=pktOut.encode("a")
-        radio.send(encoded)        
-        recibido_fila_columna_off()
-        print("INFO:button_a_was_pressed({}),Role:{}".format(configAdj,currentRole))
+        #display.show("a")
+        #encoded=pktOut.encode("a")
+        #radio.send(encoded)        
+        #recibido_fila_columna_off()
+        model.eventHandler(event="button",paramDict={"button":"a"})
+        #print("INFO:button_a_was_pressed({}),Role:{}".format(configAdj,currentRole))
     
-def button_b_was_pressed(configAdj):
+def button_b_was_pressed(configAdj):#,model):
     if configAdj:
         # config change: messageBus in messageBusesList
         global messageBus
@@ -119,10 +214,13 @@ def button_b_was_pressed(configAdj):
         pin_logo_is_touched()
         print("INFO:button_b_was_pressed({}),newbus:{}".format(configAdj,messageBus))
     else:
-        display.show("b")
-        encoded=pktOut.encode("b")
-        radio.send(encoded)        
-        recibido_fila_columna_off()
+        #display.show("b")
+        #encoded=pktOut.encode("b")
+        #radio.send(encoded)        
+        #recibido_fila_columna_off()
+        model.eventHandler(event="button",paramDict={"button":"b"})
+        #print("INFO:button_a_was_pressed({}),Role:{}".format(configAdj,currentRole))
+
 
 def on_message(message):
     validOriginRoles=validOriginRolesPerDestination[currentRole]
@@ -130,8 +228,9 @@ def on_message(message):
     print("DEBUG:on_message(pktIn.decode({})):{},'{}','{}'".format(message,decoValid,decoDesc,decoded))
     if decoValid:
         print("INFO:on_message():in from '{}': '{}'".format(fromRole,decoded))
-        display.show(decoded)
-        recibido_fila_columna_on()
+        #display.show(decoded)
+        #recibido_fila_columna_on()
+        model.message(paramDict={"origin":fromRole,"payload":decoded})
     else:
         print("DEBUG:on_message():pass".format(message,decoValid))         
 
@@ -152,17 +251,19 @@ def pin_logo_is_touched():
 
 
 if __name__=="__main__":
+    display.scroll(versionToken)
     pktIn=pkt()
     pktOut=pkt()
     radio.on()
     radio.config(group=153)#,power=6)
+    model=modelCls(currentRole,pktIn,pktOut)
     while True:
         if button_a.was_pressed():
-            configAdj=pin1.is_touched() # pin1 asserted, config change
-            button_a_was_pressed(configAdj)
+            configAdj=pin1.is_touched() # pin1 asserted, config adjustment is in order
+            button_a_was_pressed(configAdj)#,model)
         if button_b.was_pressed():
-            configAdj=pin1.is_touched() # pin1 asserted, config change
-            button_b_was_pressed(configAdj)
+            configAdj=pin1.is_touched() # pin1 asserted, config adjustment is in order
+            button_b_was_pressed(configAdj)#,model)
         if pin_logo.is_touched():
             pin_logo_is_touched()
         message = radio.receive()
