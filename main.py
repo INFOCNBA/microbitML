@@ -3,7 +3,7 @@ from microbit import *
 import radio
 import music
 versionToken="pct"
-messageBusMax=2 #min is 0
+messageBusMax=9 #min is 0, one digit avoids scrolling
 roleWeight={"A":1,"B":2}
 roleCounterMax={"A":3,"B":6}
 
@@ -257,6 +257,8 @@ if __name__=="__main__":
     radio.on()
     radio.config(group=153)#,power=6)
     model=modelCls(currentRole,pktIn,pktOut)
+    pin_logo_is_touched()
+    model.updateOutput()
     while True:
         if button_a.was_pressed():
             configAdj=pin1.is_touched() # pin1 asserted, config adjustment is in order
