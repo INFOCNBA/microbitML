@@ -46,7 +46,7 @@ detail on Role Z:
       6. Conclusion: when consuming ML-equipped devices, ALWAYS beware of errors in classification.
 
 
-
+![](README.d/practica_241029.png)
 ## Credits
 
 - heavily based on Prof Fujio Yamamoto's blog article on [building a Microbit network emulating a MLP](https://sparse-dense.blogspot.com/2018/06/microbittwo-layer-perceptronxor.html). Thanks a bunch, Mr Yamamoto!!
