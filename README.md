@@ -16,7 +16,7 @@ In the case of this proof of concept, a Perceptron is formed by a team of three 
 - Role Z: Receives the data from A and B, adds them and applies a binary activation function that will be "True" iif the sum exceeds 6.
 
 
-![](README.d/mbperceptron.png)
+![](README.d/neuronaMB.png)
 
 Count on input nodes are updated by pressing buttons A and B. Here's a detail on Role Z's output:
 
@@ -35,15 +35,16 @@ Count on input nodes are updated by pressing buttons A and B. Here's a detail on
 1. At any time,  group and role, can be checked by touching the Micro:bit logo. Avoid group 0, since any node can fallback to that group if eventually restarted.
 2. Your class is set
 3. You can now conduct any teaching experience you want. For example:
-   1. Microbits A and B are inputs for a perceptron, vertical bar in Z is the boolean output. Guess what TWO math operation drives vertical bar in Z? (answer: sums A and B, then compares to 6)
-   2. What's the difference between A and B? ( A multiplies it's count by 1, B multiplies it's count by 2)
-   3. After all groups inferred the answer to your questions, just by interaction with their MB, you can discuss with them in Machine Learning jargon:
+   1. Give the class some context on Microbits A and B being inputs for a perceptron, and vertical bar in Z is the boolean output (giving them a printed sheet with the neuron sketch above to place them, might help). When ready, a task for them would be to figure out the answer to questions like:
+	   1. Guess what TWO math operation drives vertical bar in Z? (answer: sums A and B, then compares to 6)
+	   2. What's the difference between A and B? ( A multiplies it's count by 1, B multiplies it's count by 2)
+   2. After all groups inferred the answer to your questions, just by discussing individual  interaction with their MB, you can discuss with them in Machine Learning jargon:
       1. Microbits A,B and Z form a **perceptron**, the basic processing element in ML
-      2. A and B store different **weights**, that constitutes a **ML Model**
+      2. A and B store different **weights**, that constitute a **ML Model**
       3. Z sums and applies an **activation function**. It's output might be a final **classification** of the model. Or, if part of a different **architecture**, the output might  **feed forward**  yet another **layer** of perceptrons in an **MLP**. Z might apply a **bias**, with is also part of the *ML model* . 
       4. *weights* of A and B are fixed here, but the "Learning" part of "Supervised ML" consists of adapting those *weights and bias*, by means of several thousands of cycles of exposure to  **tagged samples**, that form a **dataset**. Each cycle emprobes the model by applying small changes in *weights and bias*. That's called **training**. Training goes on, until some metric is considered satisfactory by the **data scientists** that designed the **ML pipeline**.
       5. As part of the *ML pipeline* the *model* is **validated** against an all-new *dataset*. If that metrics holds the model is considered production-grade. Otherwise, more *training* is needed. The huge  amount the training data needed, is often the main weakness of *ML pipelines* and the resulting *Supervised Machine Learning models*
-      6. Conclusion: when consuming ML-equipped devices, ALWAYS beware of errors in classification.
+      6. Conclusion: when consuming ML-equipped devices, ALWAYS beware that errors in classification will happen, specially if the underlying *model* is not *trained* for your particular application.
 
 
 ![](README.d/practica_241029.png)
