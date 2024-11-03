@@ -38,8 +38,8 @@ detail on Role Z:
    1. Microbits A and B are inputs for a perceptron, vertical bar in Z is the boolean output. Guess what TWO math operation drives vertical bar in Z? (answer: sums A and B, then compares to 6)
    2. What's the difference between A and B? ( A multiplies it's count by 1, B multiplies it's count by 2)
    3. After all groups inferred the answer to your questions, just by interaction with their MB, you can discuss with them in Machine Learning jargon:
-      1. Microbits A,B and Z forms a **perceptron**, the basic processing element in ML
-      2. A and B store different **weights**,  that form a **ML Model**
+      1. Microbits A,B and Z form a **perceptron**, the basic processing element in ML
+      2. A and B store different **weights**, that constitutes a **ML Model**
       3. Z sums and applies an **activation function**. It's output might be a final **classification** of the model. Or, if part of a different **architecture**, the output might  **feed forward**  yet another **layer** of perceptrons in an **MLP**. Z might apply a **bias**, with is also part of the *ML model* . 
       4. *weights* of A and B are fixed here, but the "Learning" part of "Supervised ML" consists of adapting those *weights and bias*, by means of several thousands of cycles of exposure to  **tagged samples**, that form a **dataset**. Each cycle emprobes the model by applying small changes in *weights and bias*. That's called **training**. Training goes on, until some metric is considered satisfactory by the **data scientists** that designed the **ML pipeline**.
       5. As part of the *ML pipeline* the *model* is **validated** against an all-new *dataset*. If that metrics holds the model is considered production-grade. Otherwise, more *training* is needed. The huge  amount the training data needed, is often the main weakness of *ML pipelines* and the resulting *Supervised Machine Learning models*
