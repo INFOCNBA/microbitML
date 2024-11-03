@@ -11,14 +11,14 @@ Microbits communicate via bluetooth, but are grouped (in app layer) in teams. Wi
 
 In the case of this proof of concept, a Perceptron is formed by a team of three MB. Two acting as inputs/dendrites and one as the output/axon. Not a multi-layer perceptron, all three Microbits compose one perceptron. These are the roles of each one:
 
-- Role A: sends a count of 3 things, multiplied by 1, valid values: {0,1,2,3}
+- Role A: sends a count of 3 things, multiplied by 1, valid values: {0,1,2,3}.
 - Role B: sends a count of (other) 3 things, multiplied by 2, valid values: {0,2,4,6}
 - Role Z: Receives the data from A and B, adds them and applies a binary activation function that will be "True" iif the sum exceeds 6.
 
 
 ![](README.d/mbperceptron.png)
 
-detail on Role Z:
+Count on input nodes are updated by pressing buttons A and B. Here's a detail on Role Z's output:
 
 ![](README.d/z_binary_output.png)
 
