@@ -1,4 +1,4 @@
-# microbitPerceptron
+# microbitML
 
 
 Framework and proof of concept for Machine Learning practices (perceptrons, MLP and so on) using a swarm of version2 [BBC Micro:bit](https://python.microbit.org/)'s, for high-school formal Education.
